@@ -3,35 +3,41 @@ import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
 
+#define shortcuts
 pi = np.pi
 fig = plt.figure()
 
-def Bänderstruktur(Delta, A):
-    N_r = 50
+#define function to plot the calculated bandstructur
+#Delta, A, have the unit B
+def bandstructure(Delta, A):
+    N_r = 50 #Number of fixed values of k_y
     k = np.linspace(-pi,pi,301)
     fig,ax = plt.subplots(1, 1, figsize=(12, 6))
     n=1
     k_y = 0
     ax.set( xlabel = '$ka/\pi$', ylabel = "$E/B$", xlim = (-1, 1), ylim=(-3, 3))
-    while n < N_r+1:
+    while n < N_r+1: #plot the bulkstates for fixed values of k_y
         ax.plot(k/pi, np.sqrt(((A*A*((np.sin(k))**2+(np.sin(k_y))**2))+(Delta - 4 + 2*(np.cos(k)+np.cos(k_y)))**2)), "b", lw = 0.4, label = "E_bL")
         ax.plot(k/pi, -np.sqrt(((A*A*((np.sin(k))**2+(np.sin(k_y))**2))+(Delta - 4 + 2*(np.cos(k)+np.cos(k_y)))**2)), "b", lw = 0.4, label = "E_bV")
         k_y = 2*pi*n/N_r
         n = n+1
    
-    if Delta >= 4 and Delta <8:
+    if Delta >= 4 and Delta <8: #plot the edge states in TI2 phase
         k_m2_1 = np.linspace(-pi,-np.arccos(3-Delta/2),50)
         k_m2_2 = -k_m2_1
         ax.plot(k_m2_1/pi, A*np.sin(k_m2_1), "r", lw=0.4)
         ax.plot(k_m2_1/pi, -A*np.sin(k_m2_1), "g", lw=0.4 )
         ax.plot(k_m2_2/pi, A*np.sin(k_m2_2), "r", lw=0.4)
         ax.plot(k_m2_2/pi, -A*np.sin(k_m2_2), "g", lw=0.4)
-    if Delta < 4 and Delta > 0: 
+    if Delta < 4 and Delta > 0: #plot the edge states in TI1 phase
         k_m1 = np.linspace(-np.arccos(1-Delta/2),np.arccos(1-Delta/2),100)
         ax.plot(k_m1/pi, A*np.sin(k_m1), "r", lw=0.4)
         ax.plot(k_m1/pi, -A*np.sin(k_m1), "g", lw=0.4)
                     
     return();
+#define the slider for Delta and A, here one can adjust the minimum, maximum and stepwidth of the sliders
 Delta_slider = widgets.FloatSlider(min=-2, max=10, value=2, step=0.025, description= u'\u0394/B :')
 A_slider = widgets.FloatSlider(min=0, max=5, value=1, step=0.025, description = 'A/B :')
-interact(Bänderstruktur, Delta = Delta_slider, A = A_slider);
+
+#creates the interactive plot 
+interact(bandstructure, Delta = Delta_slider, A = A_slider);
